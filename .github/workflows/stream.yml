@@ -28,14 +28,19 @@ jobs:
             version: false
           });
 
-          bot.on('spawn', () => {
-            console.log('Bot successfully connected to HidenCloud!');
+          // Triggers the exact millisecond the server finishes loading the bot's data chunk
+          bot.on('login', () => {
+            console.log('Bot logged in! Sending authentication commands...');
             
-            // INSTANT EASYAUTH LOGIN (Bypasses the timeout kick)
+            // Sends both commands back-to-back to bypass both register or login screens safely
             bot.chat('/register BotPassword123 BotPassword123');
             bot.chat('/login BotPassword123');
+          });
 
-            // Teleport tracking loop
+          bot.on('spawn', () => {
+            console.log('Bot has safely passed the login check!');
+            
+            // Continuous position tracking loop
             setInterval(() => {
               bot.chat('/tp StreamCam ${{ secrets.TARGET_PLAYER }}');
             }, 1000);
