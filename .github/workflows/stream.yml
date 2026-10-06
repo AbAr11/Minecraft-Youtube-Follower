@@ -27,7 +27,7 @@ jobs:
           sleep 2
 
           # 2. DIRECT YOUTUBE LINK OVERRIDE (Erased the secret vault token completely)
-          ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -f lavfi -i testsrc=size=1280x720:rate=30 -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -pix_fmt yuv420p -g 60 -c:a aac -b:a 128k -ar 44100 -f flv "puz3-t3d2-5dxu-k0a4-f9m7" &
+          ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -f lavfi -i testsrc=size=1280x720:rate=30 -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -pix_fmt yuv420p -g 60 -c:a aac -b:a 128k -ar 44100 -f flv "tq2k-0078-0j48-cd31-4kta" &
 
           # 3. Start the tracking bot with network KeepAlive handling
           node -e "
