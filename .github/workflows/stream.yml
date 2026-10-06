@@ -1,0 +1,40 @@
+name: Minecraft Spectator Stream
+on:
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Mineflayer
+        run: npm install mineflayer
+
+      - name: Launch Free Spectator Bot
+        run: |
+          node -e "
+          const mineflayer = require('mineflayer');
+          const bot = mineflayer.createBot({
+            host: '${{ secrets.SERVER_HOST }}',
+            port: parseInt('${{ secrets.SERVER_PORT }}'),
+            username: 'StreamCam',
+            version: false
+          });
+
+          bot.on('spawn', () => {
+            console.log('Bot successfully connected to HidenCloud!');
+            setInterval(() => {
+              bot.chat('/tp StreamCam ${{ secrets.TARGET_PLAYER }}');
+            }, 1000);
+          });
+
+          bot.on('kicked', (reason) => console.log('Kicked: ', reason));
+          bot.on('error', (err) => console.log('Error: ', err));
+          "
