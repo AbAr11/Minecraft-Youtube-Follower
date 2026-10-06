@@ -14,33 +14,52 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Mineflayer
-        run: npm install mineflayer
-
-      - name: Launch Free Spectator Bot
+      - name: Install Mineflayer and FFmpeg Tools
         run: |
+          npm install mineflayer
+          sudo apt-get update && sudo apt-get install -y ffmpeg xvfb
+
+      - name: Launch Free Stream Canvas & Bot
+        run: |
+          # 1. Start a fake virtual screen in the cloud data center
+          Xvfb :99 -screen 0 1280x720x24 &
+          export DISPLAY=:99
+          sleep 2
+
+          # 2. Start the video processor pushing directly to YouTube
+          ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -f lavfi -i testsrc=size=1280x720:rate=30 -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -pix_fmt yuv420p -g 60 -c:a aac -b:a 128k -ar 44100 -f flv "rtmp://://youtube.com{{ secrets.YOUTUBE_STREAM_KEY }}" &
+
+          # 3. Start the tracking bot with network KeepAlive handling
           node -e "
           const mineflayer = require('mineflayer');
           const bot = mineflayer.createBot({
             host: '${{ secrets.SERVER_HOST }}',
             port: parseInt('${{ secrets.SERVER_PORT }}'),
             username: 'StreamCam',
-            version: '1.21.4' // ⚠️ CHANGE THIS to match your exact HidenCloud server version!
+            version: '1.21.4' // Make sure this matches your exact server version!
           });
 
           bot.on('login', () => {
-            console.log('Handshake passed! Logging into EasyAuth...');
+            console.log('Handshake passed! Authenticating password...');
             bot.chat('/register BotPassword123 BotPassword123');
             bot.chat('/login BotPassword123');
           });
 
           bot.on('spawn', () => {
-            console.log('StreamCam is completely authenticated and stable!');
+            console.log('StreamCam has established a permanent live connection!');
+            
+            // Core coordinate teleportation tracking link
             setInterval(() => {
               bot.chat('/tp StreamCam ${{ secrets.TARGET_PLAYER }}');
             }, 1000);
+
+            // NETWORK KEEP-ALIVE SYSTEM: Forces automated micro-actions to bypass timeout kicks
+            setInterval(() => {
+              bot.swingArm('right'); 
+              bot.look(bot.entity.yaw + 0.1, bot.entity.pitch);
+            }, 5000);
           });
 
-          bot.on('kicked', (reason) => console.log('Kicked: ', reason));
-          bot.on('error', (err) => console.log('Error Handler Caught: ', err));
+          bot.on('kicked', (reason) => console.log('Kicked from server: ', reason));
+          bot.on('error', (err) => console.log('Network Error Handler: ', err));
           "
