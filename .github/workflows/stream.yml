@@ -25,7 +25,7 @@ jobs:
             host: '${{ secrets.SERVER_HOST }}',
             port: parseInt('${{ secrets.SERVER_PORT }}'),
             username: 'StreamCam',
-            version: '1.21.11' // ⚠️ CHANGE THIS to match your exact HidenCloud server version!
+            version: '1.21.4' // ⚠️ CHANGE THIS to match your exact HidenCloud server version!
           });
 
           bot.on('login', () => {
