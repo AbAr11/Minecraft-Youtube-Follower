@@ -26,10 +26,10 @@ jobs:
           export DISPLAY=:99
           sleep 2
 
-          # 2. Start the video processor with the corrected YouTube RTMP Ingest URL format
+          # 2. FIXED YOUTUBE URL STRING LINK
           ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -f lavfi -i testsrc=size=1280x720:rate=30 -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -pix_fmt yuv420p -g 60 -c:a aac -b:a 128k -ar 44100 -f flv "rtmp://://youtube.com{{ secrets.YOUTUBE_STREAM_KEY }}" &
 
-          # 3. Start the tracking bot with native position handling
+          # 3. Start the tracking bot with network KeepAlive handling
           node -e "
           const mineflayer = require('mineflayer');
           const bot = mineflayer.createBot({
@@ -53,7 +53,7 @@ jobs:
               bot.chat('/tp StreamCam ${{ secrets.TARGET_PLAYER }}');
             }, 1000);
 
-            // Safer loop variant to keep network state alive
+            // NETWORK KEEP-ALIVE: Tells HidenCloud the bot is alive so it never times out
             setInterval(() => {
               bot.swingArm('right');
             }, 4000);
