@@ -30,6 +30,12 @@ jobs:
 
           bot.on('spawn', () => {
             console.log('Bot successfully connected to HidenCloud!');
+            
+            // INSTANT EASYAUTH LOGIN (Bypasses the timeout kick)
+            bot.chat('/register BotPassword123 BotPassword123');
+            bot.chat('/login BotPassword123');
+
+            // Teleport tracking loop
             setInterval(() => {
               bot.chat('/tp StreamCam ${{ secrets.TARGET_PLAYER }}');
             }, 1000);
